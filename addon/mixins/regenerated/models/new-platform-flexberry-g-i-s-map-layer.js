@@ -61,6 +61,7 @@ export let defineProjections = function (model) {
 
     }),
     layerLink: Projection.hasMany('new-platform-flexberry-g-i-s-layer-link', '', {
+      allowShow: Projection.attr('Показывать'),
       layer: Projection.belongsTo('new-platform-flexberry-g-i-s-map-layer', '', {
         name: Projection.attr('Слой')
       }, { hidden: true }),
@@ -97,11 +98,11 @@ export let defineProjections = function (model) {
 
       }, { hidden: true }),
       linkParameter: Projection.hasMany('new-platform-flexberry-g-i-s-link-parameter', '', {
-        objectField: Projection.attr(''),
-        layerField: Projection.attr(''),
-        expression: Projection.attr(''),
-        queryKey: Projection.attr(''),
-        linkField: Projection.attr('')
+        objectField: Projection.attr('Поле объекта'),
+        layerField: Projection.attr('Поле слоя'),
+        expression: Projection.attr('Выражение'),
+        queryKey: Projection.attr('Параметр запроса'),
+        linkField: Projection.attr('Поле связи')
       })
     })
   });

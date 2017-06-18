@@ -2,6 +2,7 @@ import Ember from 'ember';
 import DS from 'ember-data';
 import { Projection } from 'ember-flexberry-data';
 export let Model = Ember.Mixin.create({
+  allowShow: DS.attr('boolean'),
   mapObjectSetting: DS.belongsTo('new-platform-flexberry-g-i-s-map-object-setting', { inverse: null, async: false }),
   layer: DS.belongsTo('new-platform-flexberry-g-i-s-map-layer', { inverse: 'layerLink', async: false }),
   linkParameter: DS.hasMany('new-platform-flexberry-g-i-s-link-parameter', { inverse: 'layerLink', async: false }),
@@ -20,6 +21,7 @@ export let Model = Ember.Mixin.create({
 });
 export let defineProjections = function (model) {
   model.defineProjection('LayerLinkD', 'new-platform-flexberry-g-i-s-layer-link', {
+    allowShow: Projection.attr('Показывать'),
     layer: Projection.belongsTo('new-platform-flexberry-g-i-s-map-layer', '', {
       name: Projection.attr('Слой')
     }, { hidden: true }),
@@ -35,6 +37,7 @@ export let defineProjections = function (model) {
     })
   });
   model.defineProjection('LayerLinkE', 'new-platform-flexberry-g-i-s-layer-link', {
+    allowShow: Projection.attr('Показывать'),
     layer: Projection.belongsTo('new-platform-flexberry-g-i-s-map-layer', 'Слой карты', {
 
     }),
@@ -50,6 +53,7 @@ export let defineProjections = function (model) {
     })
   });
   model.defineProjection('LayerLinkI', 'new-platform-flexberry-g-i-s-layer-link', {
+    allowShow: Projection.attr('Показывать'),
     mapObjectSetting: Projection.belongsTo('new-platform-flexberry-g-i-s-map-object-setting', '', {
       listForm: Projection.attr(''),
       editForm: Projection.attr('')
@@ -58,14 +62,15 @@ export let defineProjections = function (model) {
 
     }),
     linkParameter: Projection.hasMany('new-platform-flexberry-g-i-s-link-parameter', '', {
-      objectField: Projection.attr(''),
-      layerField: Projection.attr(''),
-      expression: Projection.attr(''),
-      queryKey: Projection.attr(''),
-      linkField: Projection.attr('')
+      objectField: Projection.attr('Поле объекта'),
+      layerField: Projection.attr('Поле слоя'),
+      expression: Projection.attr('Выражение'),
+      queryKey: Projection.attr('Параметр запроса'),
+      linkField: Projection.attr('Поле связи')
     })
   });
   model.defineProjection('LayerLinkQ', 'new-platform-flexberry-g-i-s-layer-link', {
+    allowShow: Projection.attr('Показывать'),
     layer: Projection.belongsTo('new-platform-flexberry-g-i-s-map-layer', '', {
 
     }),
@@ -73,11 +78,11 @@ export let defineProjections = function (model) {
 
     }),
     linkParameter: Projection.hasMany('new-platform-flexberry-g-i-s-link-parameter', '', {
-      objectField: Projection.attr(''),
-      layerField: Projection.attr(''),
-      expression: Projection.attr(''),
-      queryKey: Projection.attr(''),
-      linkField: Projection.attr('')
+      objectField: Projection.attr('Поле объекта'),
+      layerField: Projection.attr('Поле слоя'),
+      expression: Projection.attr('Выражение'),
+      queryKey: Projection.attr('Параметр запроса'),
+      linkField: Projection.attr('Поле связи')
     })
   });
 };

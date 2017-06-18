@@ -1,5 +1,5 @@
 export default {
-  'caption': 'Редактирование слоя',
+  'caption': 'Редактирование',
   'approve-button': {
     'caption': 'Ok'
   },
@@ -44,6 +44,9 @@ export default {
     },
     'search-settings-tab': {
       'caption': 'Настройки поиска'
+    },
+    'display-settings-tab': {
+      'caption': 'Настройки отображения'
     },
     'legend-settings-tab': {
       'caption': 'Настройки легенды'

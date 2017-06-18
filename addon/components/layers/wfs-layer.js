@@ -152,7 +152,7 @@ export default BaseLayer.extend({
 
     @method identify
     @param {Object} e Event object.
-    @param {Array} options.polygonVertices Polygon vertices of type <a href="http://leafletjs.com/reference-1.0.0.html#latlng">L.LatLng</a>.
+    @param {<a href="http://leafletjs.com/reference.html#polygon">L.Polygon</a>} polygonLayer Polygon layer related to given area.
     @param {Object[]} layers Objects describing those layers which must be identified.
     @param {Object[]} results Objects describing identification results.
     Every result-object has the following structure: { layer: ..., features: [...] },
@@ -161,17 +161,13 @@ export default BaseLayer.extend({
     or a promise returning such array.
   */
   identify(e) {
-
-    let filter = new L.Filter.Intersects().append(L.polygon(e.polygonVertices), this.get('geometryField'), this.get('crs'));
+    let filter = new L.Filter.Intersects().append(e.polygonLayer, this.get('geometryField'), this.get('crs'));
 
     let featuresPromise = this._getFeature({
       filter
     });
 
-    e.results.push({
-      layerModel: this.get('layerModel'),
-      features: featuresPromise
-    });
+    return featuresPromise;
   },
 
   /**
@@ -190,10 +186,6 @@ export default BaseLayer.extend({
     let propertyName = e.searchOptions.propertyName;
 
     if (Ember.isNone(propertyName)) {
-      propertyName = this.get('layerModel.settingsAsObject.searchSettings.featuresPropertiesSettings.displayProperty');
-    }
-
-    if (Ember.isNone(propertyName)) {
       return;
     }
 
@@ -201,13 +193,15 @@ export default BaseLayer.extend({
       matchCase: false
     });
 
-    return this._getFeature({
+    let featuresPromise = this._getFeature({
       filter,
       maxFeatures: e.searchOptions.maxResultsCount,
       style: {
         color: 'yellow'
       }
     });
+
+    return featuresPromise;
   },
 
   /**
@@ -220,7 +214,6 @@ export default BaseLayer.extend({
     or a promise returning such array.
   */
   query(e) {
-
     let filter = new L.Filter.EQ();
 
     for (var property in e.queryFilter) {
@@ -229,8 +222,8 @@ export default BaseLayer.extend({
       }
     }
 
-    e.results.push(this._getFeature({
-      filter
-    }, true));
+    let featuresPromise = this._getFeature({ filter }, true);
+
+    return featuresPromise;
   }
 });
