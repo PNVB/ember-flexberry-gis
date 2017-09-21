@@ -61,6 +61,11 @@ module.exports = {
     app.import(app.bowerDirectory + '/html2canvas/dist/html2canvas.js');
     app.import(app.bowerDirectory + '/leaflet-export/leaflet_export.js');
 
+    //Leaflet.markercluster
+    app.import(app.bowerDirectory + '/leaflet.markercluster/dist/leaflet.markercluster.js');
+    app.import(app.bowerDirectory + '/leaflet.markercluster/dist/MarkerCluster.css');
+    app.import(app.bowerDirectory + '/leaflet.markercluster/dist/MarkerCluster.Default.css');
+
     // Proj4Leaflet.
     app.import(app.bowerDirectory + '/proj4/dist/proj4-src.js');
     app.import(app.bowerDirectory + '/proj4leaflet/src/proj4leaflet.js');
@@ -116,5 +121,10 @@ module.exports = {
     // Leaflet zoomslider control
     app.import(app.bowerDirectory + '/leaflet.zoomslider/src/L.Control.Zoomslider.js');
     app.import(app.bowerDirectory + '/leaflet.zoomslider/src/L.Control.Zoomslider.css');
+
+    // Import ESRI.terraformer
+
+    // ESRI.terraformer
+    app.import(app.bowerDirectory + '/terraformer/terraformer.js');
   }
 };
