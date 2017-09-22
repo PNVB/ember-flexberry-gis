@@ -39,7 +39,7 @@ export default BaseLayer.extend({
     Leaflet layer or promise returning such layer.
   */
   createLayer() {
-    var thisReference = this;
+    let thisReference = this;
     return new Ember.RSVP.Promise((resolve, reject) => {
       Ember.$.ajax({
         type: 'get',
@@ -51,7 +51,10 @@ export default BaseLayer.extend({
           let clusterLayer = L.markerClusterGroup();
           for (let i = 0; i < response.points.length; i++) {
             let marker = L.marker([response.points[i].lat, response.points[i].lng]);
-            marker.properties = { 'body': response.points[i].body, 'header': response.points[i].header, 'hintheader': response.points[i].hintHeader };
+            marker.properties = {
+              'body': response.points[i].body,
+              'header': response.points[i].header.replace('href=\"', 'href=\"'.concat('http://map.visitcrimea.guide')),
+              'hintheader': response.points[i].hintHeader };
             layer.addLayer(marker);
             clusterLayer.addLayer(marker);
           }
@@ -66,17 +69,16 @@ export default BaseLayer.extend({
               let polygon = L.polygon(JSON.parse(latlngs));
               polygon.properties = {
                 'body': response.poligons[i].body,
-                'header': response.poligons[i].header.replace('href=\"', 'href=\"'+'http://map.visitcrimea.guide'),
+                'header': response.poligons[i].header.replace('href=\"', 'href=\"'.concat('http://map.visitcrimea.guide')),
                 'hintheader': response.poligons[i].hintHeader,
                 'color': response.poligons[i].color
-               };
+              };
               layer.addLayer(polygon);
               clusterLayer.addLayer(polygon);
             }
           }
 
           thisReference.set('_beachLayer', layer);
-          //Ember.set(beachesLayer, '_beachLayer', layer);
           console.log(layer);
           resolve(clusterLayer);
         }
@@ -103,19 +105,19 @@ export default BaseLayer.extend({
     var bounds = new Terraformer.Primitive(e.polygonLayer.toGeoJSON());
 
     let groupLayer = this.get('_beachLayer');
-    //console.log("grouplayer: "+ groupLayer);
 
+    //console.log("grouplayer: "+ groupLayer);
     return new Ember.RSVP.Promise((resolve, reject) => {
       let features = Ember.A();
       groupLayer.eachLayer(function(layer) {
-        let geoLayer = layer.toGeoJSON();
-        let primitive = new Terraformer.Primitive(geoLayer.geometry);
-        let l = L.geoJSON(geoLayer);
-        geoLayer.properties = layer.properties;
+        let feature = layer.toGeoJSON();
+        let primitive = new Terraformer.Primitive(feature.geometry);
+        let l = L.geoJSON(feature);
+        feature.properties = layer.properties;
 
-        if (primitive instanceof Terraformer.Point? primitive.within(bounds): (primitive.intersects(bounds) || primitive.within(bounds))) {
-          geoLayer.leafletLayer = l;
-          features.pushObject(geoLayer);
+        if (primitive instanceof Terraformer.Point? primitive.within(bounds) : (primitive.intersects(bounds) || primitive.within(bounds))) {
+          feature.leafletLayer = l;
+          features.pushObject(feature);
         }
       });
       resolve(features);
@@ -135,6 +137,25 @@ export default BaseLayer.extend({
     or a promise returning such array.
   */
   search(e) {
-    // TODO
+    let groupLayer = this.get('_beachLayer');
+
+    return new Ember.RSVP.Promise((resolve, reject) => {
+      let features = Ember.A();
+      groupLayer.eachLayer(function(layer) {
+        let feature = layer.toGeoJSON();
+        let l = L.geoJSON(feature);
+        feature.properties = layer.properties;
+
+        // if layer satisfies search query
+        //for (var i = 0; i < e.searchOptions.searchFields.length; i++) {
+        //let property = e.searchOptions.searchFields[i];
+        if (feature.properties.hintheader.includes(e.searchOptions.queryString)) {
+          feature.leafletLayer = l;
+          features.pushObject(feature);
+        }
+        //}
+      });
+      resolve(features);
+    });
   }
 });
