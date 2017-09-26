@@ -21,7 +21,24 @@ export default BaseLayer.extend({
   */
   url: null,
 
-  //TODO: delete not required options
+  /**
+    Beaches JSON data URL.
+
+    @property urlJSON
+    @type String
+    @default null
+  */
+  urlJSON: 'http://map.visitcrimea.guide/filter/map',   // TODO: add to settings
+
+  /**
+    Beaches result data URL.
+
+    @property urlData
+    @type String
+    @default null
+  */
+  urlData: 'http://map.visitcrimea.guide',  // TODO: add to settings
+
   leafletOptions: [
     'minZoom', 'maxZoom', 'maxNativeZoom', 'tileSize', 'subdomains',
     'errorTileUrl', 'attribution', 'tms', 'continuousWorld', 'noWrap',
@@ -46,12 +63,11 @@ export default BaseLayer.extend({
     Leaflet layer or promise returning such layer.
   */
   createLayer() {
-    let thisReference = this;
+    let thisRef = this;
     return new Ember.RSVP.Promise((resolve, reject) => {
       Ember.$.ajax({
         type: 'get',
-        //url: Ember.get('settings', urlJSON),
-        url: 'http://localhost:3000/db',
+        url: this.get('urlJSON'),
         dataType: 'json',
         success: function (response) {
           let layer = L.layerGroup();
@@ -60,8 +76,8 @@ export default BaseLayer.extend({
             let marker = L.marker([response.points[i].lat, response.points[i].lng]);
             marker.properties = {
               'hintheader': response.points[i].hintHeader,
-              'header': response.points[i].header.replace('href=\"', 'href=\"'.concat('http://map.visitcrimea.guide')),
-              'body': response.points[i].body.replace('href=\"', 'href=\"'.concat('http://map.visitcrimea.guide')).replace('src=\"', 'src=\"'.concat('http://map.visitcrimea.guide')),
+              'header': response.points[i].header.replace('href=\"', 'href=\"'.concat(thisRef.get('urlData'))),
+              'body': response.points[i].body.replace('href=\"', 'href=\"'.concat(thisRef.get('urlData'))).replace('src=\"', 'src=\"'.concat(thisRef.get('urlData'))),
               'color': response.points[i].color
             };
             layer.addLayer(marker);
@@ -76,8 +92,8 @@ export default BaseLayer.extend({
               let polygon = L.polygon(latlngs);
               polygon.properties = {
                 'hintheader': response.poligons[i].hintHeader,
-                'header': response.poligons[i].header.replace('href=\"', 'href=\"'.concat('http://map.visitcrimea.guide')),
-                'body': response.poligons[i].body.replace('href=\"', 'href=\"'.concat('http://map.visitcrimea.guide')).replace('src=\"', 'src=\"'.concat('http://map.visitcrimea.guide')),
+                'header': response.poligons[i].header.replace('href=\"', 'href=\"'.concat(thisRef.get('urlData'))),
+                'body': response.poligons[i].body.replace('href=\"', 'href=\"'.concat(thisRef.get('urlData'))).replace('src=\"', 'src=\"'.concat(thisRef.get('urlData'))),
                 'color': response.poligons[i].color
               };
               layer.addLayer(polygon);
@@ -85,7 +101,7 @@ export default BaseLayer.extend({
             }
           }
 
-          thisReference.set('_beachLayer', layer);
+          thisRef.set('_beachLayer', layer);
           resolve(clusterLayer);
         }
       });
@@ -113,7 +129,6 @@ export default BaseLayer.extend({
 
     let groupLayer = this.get('_beachLayer');
 
-    //console.log("grouplayer: "+ groupLayer);
     return new Ember.RSVP.Promise((resolve, reject) => {
       let features = Ember.A();
       groupLayer.eachLayer(function(layer) {

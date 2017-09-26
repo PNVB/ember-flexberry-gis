@@ -25,7 +25,7 @@ export default Ember.Component.extend({
     @type String[]
     @default ['item', 'feature-result-item']
   */
-  classNames: ['item', 'feature-result-item-beaches'],
+  classNames: ['item', 'feature-result-item'],
 
   /**
     Components class names bindings.
@@ -61,7 +61,7 @@ export default Ember.Component.extend({
     @type string
     @private
    */
-  displayProperty: ['header'],
+  displayProperty: null,
 
   /**
     Feature properties excluded from being displayed in info table.
