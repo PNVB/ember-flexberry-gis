@@ -29,6 +29,13 @@ export default BaseLayer.extend({
     'updateWhenIdle', 'detectRetina', 'reuseTiles', 'bounds', 'geometryField'
   ],
 
+  /**
+  Group Layer storing data get while creating layer
+
+  @property _beachLayer
+  @type L.layerGroup
+  @default null
+  */
   _beachLayer: null,
 
   /**
@@ -43,34 +50,34 @@ export default BaseLayer.extend({
     return new Ember.RSVP.Promise((resolve, reject) => {
       Ember.$.ajax({
         type: 'get',
+        //url: Ember.get('settings', urlJSON),
         url: 'http://localhost:3000/db',
         dataType: 'json',
         success: function (response) {
-          console.log(response);
           let layer = L.layerGroup();
           let clusterLayer = L.markerClusterGroup();
           for (let i = 0; i < response.points.length; i++) {
             let marker = L.marker([response.points[i].lat, response.points[i].lng]);
             marker.properties = {
-              'body': response.points[i].body,
+              'hintheader': response.points[i].hintHeader,
               'header': response.points[i].header.replace('href=\"', 'href=\"'.concat('http://map.visitcrimea.guide')),
-              'hintheader': response.points[i].hintHeader };
+              'body': response.points[i].body.replace('href=\"', 'href=\"'.concat('http://map.visitcrimea.guide')).replace('src=\"', 'src=\"'.concat('http://map.visitcrimea.guide')),
+              'color': response.points[i].color
+            };
             layer.addLayer(marker);
             clusterLayer.addLayer(marker);
           }
 
           for (let i = 0; i < response.poligons.length; i++) {
-            let latlngs = response.poligons[i].data;
+            let latlngs = JSON.parse(response.poligons[i].data);
 
-            //if response.poligons contains empty 'data' values
-            if (latlngs !== "[ [  ] ]") {
-              //console.log(response.poligons[i].id);
-              //console.log(JSON.parse(latlngs));
-              let polygon = L.polygon(JSON.parse(latlngs));
+            //if response.poligons does not contain empty 'data' values
+            if (Array.isArray(latlngs[0]) && latlngs[0].length ) {
+              let polygon = L.polygon(latlngs);
               polygon.properties = {
-                'body': response.poligons[i].body,
-                'header': response.poligons[i].header.replace('href=\"', 'href=\"'.concat('http://map.visitcrimea.guide')),
                 'hintheader': response.poligons[i].hintHeader,
+                'header': response.poligons[i].header.replace('href=\"', 'href=\"'.concat('http://map.visitcrimea.guide')),
+                'body': response.poligons[i].body.replace('href=\"', 'href=\"'.concat('http://map.visitcrimea.guide')).replace('src=\"', 'src=\"'.concat('http://map.visitcrimea.guide')),
                 'color': response.poligons[i].color
               };
               layer.addLayer(polygon);
@@ -79,7 +86,6 @@ export default BaseLayer.extend({
           }
 
           thisReference.set('_beachLayer', layer);
-          console.log(layer);
           resolve(clusterLayer);
         }
       });
@@ -102,6 +108,7 @@ export default BaseLayer.extend({
   or a promise returning such array.
   */
   identify(e) {
+    // identification bounds
     var bounds = new Terraformer.Primitive(e.polygonLayer.toGeoJSON());
 
     let groupLayer = this.get('_beachLayer');
@@ -112,6 +119,8 @@ export default BaseLayer.extend({
       groupLayer.eachLayer(function(layer) {
         let feature = layer.toGeoJSON();
         let primitive = new Terraformer.Primitive(feature.geometry);
+
+        // used for Zoom to and Pan to each feature
         let l = L.geoJSON(feature);
         feature.properties = layer.properties;
 
@@ -147,13 +156,10 @@ export default BaseLayer.extend({
         feature.properties = layer.properties;
 
         // if layer satisfies search query
-        //for (var i = 0; i < e.searchOptions.searchFields.length; i++) {
-        //let property = e.searchOptions.searchFields[i];
         if (feature.properties.hintheader.includes(e.searchOptions.queryString)) {
           feature.leafletLayer = l;
           features.pushObject(feature);
         }
-        //}
       });
       resolve(features);
     });

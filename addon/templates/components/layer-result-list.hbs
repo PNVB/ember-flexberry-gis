@@ -37,7 +37,7 @@
       <div class="ui list transition">
         {{#each result.features as |feature|}}
           {{#if (known-for-type 'component' (concat 'feature-result-item-' result.layerModel.type))}}
-            {{component (concat 'components/feature-result-item-' result.layerModel.type)
+            {{component (concat 'feature-result-item-' result.layerModel.type)
               feature=feature
               infoExpanded=(and (eq result.features.length 1) result.first)
               displayProperty="displayValue"

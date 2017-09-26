@@ -1,9 +1,9 @@
 import Ember from 'ember';
 
-export function knownForType(params/*, hash*/) {
-  let [layer, type] = params;
+export default Ember.Helper.extend({
+  compute(params/*, hash*/) {
+    let [layer, type] = params;
 
-  return Ember.getOwner(this).knownForType(layer, this.get(type));
-}
-
-export default Ember.Helper.helper(knownForType);
+    return Ember.getOwner(this).knownForType(layer, type);
+  }
+});
