@@ -22,7 +22,8 @@
     "currentURL",
     "currentPath",
     "currentRouteName",
-    "L"
+    "L",
+    "Terraformer"
   ],
   "node": false,
   "browser": false,
@@ -49,5 +50,5 @@
   "white": false,
   "eqnull": true,
   "esnext": true,
-  "unused": "vars" 
+  "unused": "vars"
 }

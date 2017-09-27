@@ -55,6 +55,7 @@ export default BaseLayer.extend({
     let settings = this._super(...arguments);
     Ember.$.extend(true, settings, {
       url: undefined,
+
       //urlJSON: 'http://map.visitcrimea.guide/filter/map',
       //urlData: 'http://map.visitcrimea.guide'
     });

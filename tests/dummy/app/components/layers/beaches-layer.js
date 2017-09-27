@@ -72,29 +72,32 @@ export default BaseLayer.extend({
         success: function (response) {
           let layer = L.layerGroup();
           let clusterLayer = L.markerClusterGroup();
-          for (let i = 0; i < response.points.length; i++) {
-            let marker = L.marker([response.points[i].lat, response.points[i].lng]);
+          let points = response.points;
+          for (let i = 0; i < points.length; i++) {
+            let marker = L.marker([points[i].lat, points[i].lng]);
             marker.properties = {
-              'hintheader': response.points[i].hintHeader,
-              'header': response.points[i].header.replace('href=\"', 'href=\"'.concat(thisRef.get('urlData'))),
-              'body': response.points[i].body.replace('href=\"', 'href=\"'.concat(thisRef.get('urlData'))).replace('src=\"', 'src=\"'.concat(thisRef.get('urlData'))),
-              'color': response.points[i].color
+              'hintheader': points[i].hintHeader,
+              'header': points[i].header.replace('href=\"', 'href=\"'.concat(thisRef.get('urlData'))),
+              'body': points[i].body.replace('href=\"', 'href=\"'.concat(thisRef.get('urlData'))).replace('src=\"', 'src=\"'.concat(thisRef.get('urlData'))),
+              'color': points[i].color
             };
             layer.addLayer(marker);
             clusterLayer.addLayer(marker);
           }
 
-          for (let i = 0; i < response.poligons.length; i++) {
-            let latlngs = JSON.parse(response.poligons[i].data);
+          let poligons = response.poligons;
+          for (let i = 0; i < poligons.length; i++) {
+            let latlngs = JSON.parse(poligons[i].data);
 
             //if response.poligons does not contain empty 'data' values
-            if (Array.isArray(latlngs[0]) && latlngs[0].length ) {
+            if (Array.isArray(latlngs[0]) && latlngs[0].length) {
               let polygon = L.polygon(latlngs);
               polygon.properties = {
-                'hintheader': response.poligons[i].hintHeader,
-                'header': response.poligons[i].header.replace('href=\"', 'href=\"'.concat(thisRef.get('urlData'))),
-                'body': response.poligons[i].body.replace('href=\"', 'href=\"'.concat(thisRef.get('urlData'))).replace('src=\"', 'src=\"'.concat(thisRef.get('urlData'))),
-                'color': response.poligons[i].color
+                'hintheader': poligons[i].hintHeader,
+                'header': poligons[i].header.replace('href=\"', 'href=\"'.concat(thisRef.get('urlData'))),
+                'body': poligons[i].body.replace('href=\"', 'href=\"'.concat(thisRef.get('urlData')))
+                  .replace('src=\"', 'src=\"'.concat(thisRef.get('urlData'))),
+                'color': poligons[i].color
               };
               layer.addLayer(polygon);
               clusterLayer.addLayer(polygon);
@@ -139,7 +142,7 @@ export default BaseLayer.extend({
         let l = L.geoJSON(feature);
         feature.properties = layer.properties;
 
-        if (primitive instanceof Terraformer.Point? primitive.within(bounds) : (primitive.intersects(bounds) || primitive.within(bounds))) {
+        if (primitive instanceof Terraformer.Point ? primitive.within(bounds) : (primitive.intersects(bounds) || primitive.within(bounds))) {
           feature.leafletLayer = l;
           features.pushObject(feature);
         }
