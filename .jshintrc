@@ -3,8 +3,7 @@
     "document",
     "window",
     "-Promise",
-    "L",
-    "Terraformer"
+    "L"
   ],
   "globals": {
     "moment": true
