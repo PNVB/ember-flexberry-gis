@@ -4,6 +4,7 @@
 
 import Ember from 'ember';
 import BaseLayer from 'ember-flexberry-gis/components/base-layer';
+import config from 'dummy/config/environment';
 
 /**
   Beaches layer component for leaflet map.
@@ -20,15 +21,6 @@ export default BaseLayer.extend({
     @default null
   */
   url: null,
-
-  /**
-    Beaches JSON data URL.
-
-    @property urlJSON
-    @type String
-    @default null
-  */
-  urlJSON: 'http://map.visitcrimea.guide/filter/map',   // TODO: add to settings
 
   /**
     Beaches result data URL.
@@ -67,9 +59,10 @@ export default BaseLayer.extend({
     return new Ember.RSVP.Promise((resolve, reject) => {
       Ember.$.ajax({
         type: 'get',
-        url: this.get('urlJSON'),
+        url: config.APP.backendUrls.proxy.concat('/beaches'),
         dataType: 'json',
         success: function (response) {
+          response = JSON.parse(response);
           let layer = L.layerGroup();
           let clusterLayer = L.markerClusterGroup();
           let points = response.points;
